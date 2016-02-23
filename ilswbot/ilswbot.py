@@ -2,10 +2,7 @@
 
 import urllib.request
 from telegram import Updater
-from config import TELEGRAM_API_KEY
-
-updater = Updater(token=TELEGRAM_API_KEY)
-dispatcher = updater.dispatcher
+from ilswbot.config import TELEGRAM_API_KEY
 
 
 def process(bot, update):
@@ -19,5 +16,8 @@ def get_lukas_status():
     return urllib.request.urlopen("http://ist-lukas-schon-wach.lol?raw=on").read()
 
 
-dispatcher.addTelegramMessageHandler(process)
-updater.start_polling()
+def main():
+    updater = Updater(token=TELEGRAM_API_KEY)
+    dispatcher = updater.dispatcher
+    dispatcher.addTelegramMessageHandler(process)
+    updater.start_polling()
