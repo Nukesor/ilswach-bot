@@ -6,11 +6,12 @@ from ilswbot.config import TELEGRAM_API_KEY
 
 
 def process(bot, update):
+    names = ['lukas', 'lulu']
     message = update.message.text.lower()
     if 'lukasovich' == update.message.from_user.username.lower():
         if 'wach' in message:
             bot.sendMessage(chat_id=update.message.chat_id, text='Halt die Fresse Lukas')
-    elif 'lukas' in message and 'wach' in message:
+    elif len(list(filter(lambda name: name in message, names))) > 0 and 'wach' in message:
         status = get_lukas_status()
         status = status.decode('utf-8')
         bot.sendMessage(chat_id=update.message.chat_id, text=status)
