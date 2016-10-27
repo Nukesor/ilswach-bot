@@ -26,3 +26,4 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.addTelegramMessageHandler(process)
     updater.start_polling()
+    updater.idle()
