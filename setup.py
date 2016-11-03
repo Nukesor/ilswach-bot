@@ -10,8 +10,8 @@ setup(
     url='http://github.com/Nukesor/ilswlol-bot',
     license='MIT',
     install_requires=[
-        'python-telegram-bot==3.2.0',
-        'urllib3==1.14'
+        'python-telegram-bot==5.2.0',
+        'urllib3==1.19'
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',
