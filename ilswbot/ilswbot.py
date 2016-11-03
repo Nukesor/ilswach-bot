@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import urllib.request
-from telegram import Updater
+from telegram.ext import Updater, MessageHandler, Filters
 from ilswbot.config import TELEGRAM_API_KEY
 
 
@@ -24,6 +24,6 @@ def get_lukas_status():
 def main():
     updater = Updater(token=TELEGRAM_API_KEY)
     dispatcher = updater.dispatcher
-    dispatcher.addTelegramMessageHandler(process)
+    dispatcher.add_handler(MessageHandler(Filters.text, process))
     updater.start_polling()
     updater.idle()

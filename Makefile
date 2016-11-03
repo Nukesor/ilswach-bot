@@ -1,6 +1,12 @@
-.PHONY: default install
+.PHONY: default, dev-install, upload
 
-default:
+default: dev-install
+
+dev-install:
+	sudo python setup.py develop
 
 install:
-	sudo pip install -r requirements.txt
+	sudo python setup.py install
+
+upload: clean dist
+	twine upload dist/*
