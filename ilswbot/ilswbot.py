@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import urllib.request
+import urllib.error
 from telegram.ext import Updater, MessageHandler, Filters
 from ilswbot.config import TELEGRAM_API_KEY
 
@@ -12,9 +13,14 @@ def process(bot, update):
         if 'wach' in message:
             bot.sendMessage(chat_id=update.message.chat_id, text='Halt die Fresse Lukas')
     elif len(list(filter(lambda name: name in message, names))) > 0 and 'wach' in message:
-        status = get_lukas_status()
-        status = status.decode('utf-8')
-        bot.sendMessage(chat_id=update.message.chat_id, text=status)
+        try:
+            status = get_lukas_status()
+            status = status.decode('utf-8')
+            bot.sendMessage(chat_id=update.message.chat_id, text=status)
+        except urllib.error.HTTPError:
+            status = 'Jo. Die Api ist im Sack.'
+            bot.sendMessage(chat_id=update.message.chat_id, text=status)
+
 
 
 def get_lukas_status():
