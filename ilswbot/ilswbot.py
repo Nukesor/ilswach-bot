@@ -98,20 +98,20 @@ class Ilsw():
     def answer_permanent_subscribers(self, bot, job):
         """Notify subscribers, if the Lukas sleep status changes."""
         if len(self.permanent_subscribers) > 0:
-            success, response = self.get_lukas_status()
+            success, api_response = self.get_lukas_status()
             if success:
-                if self.last_status != response:
+                if self.last_status != api_response:
                     for subscriber in self.permanent_subscribers:
-                        if response == "NEIN":
+                        if api_response == "NEIN":
                             response = "Lukas schläft jetzt :)"
-                        elif response == "JA":
+                        elif api_response == "JA":
                             response = "Lukas ist jetzt wach :)"
                         else:
                             response = "Komische API antwort...: {}".format(response)
                         bot.sendMessage(subscriber, text=response)
 
                     self.subscribers = []
-                self.last_status = response
+                self.last_status = api_response
 
     def main(self):
         """The main loop of the bot."""
