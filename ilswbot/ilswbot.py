@@ -73,7 +73,7 @@ class Ilsw():
     def get_lukas_status(self):
         """Poll the ilsw api for lukas's sleep status."""
         try:
-            status = urllib.request.urlopen("http://ist-lukas-schon-wach.lol?raw=on").read()
+            status = urllib.request.urlopen("http://tron.je?raw=on").read()
             return True, status.decode('utf-8')
         except urllib.error.HTTPError:
             return False, 'Jo. Die Api ist im Sack.'
