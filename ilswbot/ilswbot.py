@@ -49,22 +49,22 @@ class Ilsw():
             username = update.message.from_user.username
             user_id = update.message.from_user.id
 
-            # Subscribe
-            if 'subscribe' in message:
-                # Add to permanent subscribers
-                if user_id not in self.permanent_subscribers:
-                    self.permanent_subscribers.append(user_id)
-
-                response = 'You are now subscribed, {}'.format(username)
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
-
             # Unsubscribe
-            elif 'unsubscribe' in message:
+            if 'unsubscribe' in message:
                 # Remove from permanent subscribers
                 if user_id in self.permanent_subscribers:
                     self.permanent_subscribers.remove(user_id)
 
                 response = 'You are now unsubscribed, {}'.format(username)
+                bot.sendMessage(chat_id=update.message.chat_id, text=response)
+
+            # Subscribe
+            elif 'subscribe' in message:
+                # Add to permanent subscribers
+                if user_id not in self.permanent_subscribers:
+                    self.permanent_subscribers.append(user_id)
+
+                response = 'You are now subscribed, {}'.format(username)
                 bot.sendMessage(chat_id=update.message.chat_id, text=response)
 
             # Normal requests
@@ -111,7 +111,7 @@ class Ilsw():
                         bot.sendMessage(subscriber, text=response)
 
                     self.subscribers = []
-                    self.last_status = response
+                self.last_status = response
 
     def main(self):
         """The main loop of the bot."""
