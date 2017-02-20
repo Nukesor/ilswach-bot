@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
-import urllib.request
 import urllib.error
-from telegram.ext import Updater, MessageHandler, Filters
+import urllib.request
 from ilswbot.config import TELEGRAM_API_KEY
+
+from telegram.ext import (
+    Filters,
+    Job,
+    MessageHandler,
+    Updater,
+)
 
 
 class Ilsw():
@@ -18,8 +24,8 @@ class Ilsw():
         dispatcher = self.updater.dispatcher
         dispatcher.add_handler(MessageHandler(Filters.text, self.process))
         job_queue = self.updater.job_queue
-        job_queue.put(self.answer_subscribers, 10, repeat=True)
-        job_queue.put(self.answer_permanent_subscribers, 10, repeat=True)
+        job_queue.put(Job(self.answer_subscribers, 10, repeat=True))
+        job_queue.put(Job(self.answer_permanent_subscribers, 10, repeat=True))
         self.updater.start_polling()
 
         self.last_status = None
