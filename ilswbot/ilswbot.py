@@ -70,11 +70,11 @@ class Ilsw():
             # Normal requests
             else:
                 success, response = self.get_lukas_status()
-                bot.sendMessage(chat_id=chat_id, text=response)
                 if success and response == 'NEIN':
                     # TODO: Implement set
                     if chat_id not in self.subscribers:
                         self.subscribers.append(chat_id)
+                bot.sendMessage(chat_id=chat_id, text=response)
 
     def get_lukas_status(self):
         """Poll the ilsw api for lukas's sleep status."""
