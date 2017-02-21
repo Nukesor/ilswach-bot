@@ -56,7 +56,7 @@ class Ilsw():
                     self.permanent_subscribers.remove(user_id)
 
                 response = 'You are now unsubscribed, {}'.format(username)
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
+                bot.sendMessage(chat_id=chat_id, text=response)
 
             # Subscribe
             elif 'subscribe' in message:
@@ -65,12 +65,12 @@ class Ilsw():
                     self.permanent_subscribers.append(user_id)
 
                 response = 'You are now subscribed, {}'.format(username)
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
+                bot.sendMessage(chat_id=chat_id, text=response)
 
             # Normal requests
             else:
                 success, response = self.get_lukas_status()
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
+                bot.sendMessage(chat_id=chat_id, text=response)
                 if success and response == 'NEIN':
                     # TODO: Implement set
                     if chat_id not in self.subscribers:
@@ -87,8 +87,8 @@ class Ilsw():
     def answer_subscribers(self, bot, job):
         """Check if Lukas is now awake and notify everybody who asked, while he was sleeping."""
         if len(self.subscribers) > 0:
-            success, response = self.get_lukas_status()
-            if success and response == 'JA':
+            success, api_response = self.get_lukas_status()
+            if success and api_response == 'JA':
                 for subscriber in self.subscribers:
                     response = "Leute, Lukas is grad aufgewacht!"
                     bot.sendMessage(chat_id=subscriber, text=response)
