@@ -46,10 +46,11 @@ class Ilsw():
             chat_id = update.message.chat_id
 
             success, response = self.get_lukas_status()
-            bot.sendMessage(chat_id=update.message.chat_id, text=response)
-            if success and 'NEIN' in response:
+            if success and response == 'NEIN':
+                # TODO: Implement set
                 if chat_id not in self.subscribers:
                     self.subscribers.append(chat_id)
+            bot.sendMessage(chat_id=chat_id, text=response)
 
     def get_lukas_status(self):
         """Poll the ilsw api for lukas's sleep status."""
@@ -62,8 +63,8 @@ class Ilsw():
     def answer_subscribers(self, bot, job):
         """Check if Lukas is now awake and notify everybody who asked, while he was sleeping."""
         if len(self.subscribers) > 0:
-            success, response = self.get_lukas_status()
-            if success and response == 'JA':
+            success, api_response = self.get_lukas_status()
+            if success and api_response == 'JA':
                 for subscriber in self.subscribers:
                     response = "Leute, Lukas is grad aufgewacht!"
                     bot.sendMessage(chat_id=subscriber, text=response)
