@@ -25,12 +25,10 @@ class Ilsw():
         dispatcher.add_handler(MessageHandler(Filters.text, self.process))
         job_queue = self.updater.job_queue
         job_queue.put(Job(self.answer_subscribers, 10, repeat=True))
-        job_queue.put(Job(self.answer_permanent_subscribers, 10, repeat=True))
         self.updater.start_polling()
 
         self.last_status = None
         self.subscribers = []
-        self.permanent_subscribers = []
 
     def process(self, bot, update):
         """Check if anybody asked for lukas's status and anser them."""
@@ -46,35 +44,12 @@ class Ilsw():
 
             # Extract message meta data
             chat_id = update.message.chat_id
-            username = update.message.from_user.username
-            user_id = update.message.from_user.id
 
-            # Unsubscribe
-            if 'unsubscribe' in message:
-                # Remove from permanent subscribers
-                if user_id in self.permanent_subscribers:
-                    self.permanent_subscribers.remove(user_id)
-
-                response = 'You are now unsubscribed, {}'.format(username)
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
-
-            # Subscribe
-            elif 'subscribe' in message:
-                # Add to permanent subscribers
-                if user_id not in self.permanent_subscribers:
-                    self.permanent_subscribers.append(user_id)
-
-                response = 'You are now subscribed, {}'.format(username)
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
-
-            # Normal requests
-            else:
-                success, response = self.get_lukas_status()
-                bot.sendMessage(chat_id=update.message.chat_id, text=response)
-                if success and response == 'NEIN':
-                    # TODO: Implement set
-                    if chat_id not in self.subscribers:
-                        self.subscribers.append(chat_id)
+            success, response = self.get_lukas_status()
+            bot.sendMessage(chat_id=update.message.chat_id, text=response)
+            if success and 'NEIN' in response:
+                if chat_id not in self.subscribers:
+                    self.subscribers.append(chat_id)
 
     def get_lukas_status(self):
         """Poll the ilsw api for lukas's sleep status."""
@@ -94,24 +69,6 @@ class Ilsw():
                     bot.sendMessage(chat_id=subscriber, text=response)
 
                 self.subscribers = []
-
-    def answer_permanent_subscribers(self, bot, job):
-        """Notify subscribers, if the Lukas sleep status changes."""
-        if len(self.permanent_subscribers) > 0:
-            success, api_response = self.get_lukas_status()
-            if success:
-                if self.last_status != api_response:
-                    for subscriber in self.permanent_subscribers:
-                        if api_response == "NEIN":
-                            response = "Lukas schläft jetzt :)"
-                        elif api_response == "JA":
-                            response = "Lukas ist jetzt wach :)"
-                        else:
-                            response = "Komische API antwort...: {}".format(response)
-                        bot.sendMessage(subscriber, text=response)
-
-                    self.subscribers = []
-                self.last_status = api_response
 
     def main(self):
         """The main loop of the bot."""
