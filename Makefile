@@ -1,12 +1,9 @@
-.PHONY: default, dev-install, upload
+default: venv
 
-default: dev-install
+venv:
+	python3 -m venv venv
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install -r requirements.txt --upgrade
 
-dev-install:
-	sudo python setup.py develop
-
-install:
-	sudo python setup.py install
-
-upload: clean dist
-	twine upload dist/*
+tesclean:
+	rm -rf venv
