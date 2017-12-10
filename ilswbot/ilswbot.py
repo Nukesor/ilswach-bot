@@ -54,7 +54,7 @@ class Ilsw():
         try:
             session = get_session()
             chat_id = update.message.chat_id
-            subscriber = self.get_or_create_subscriber(session, chat_id)
+            subscriber = Subscriber.get_or_create(session, chat_id)
 
             subscriber.active = True
             session.add(subscriber)
@@ -73,7 +73,7 @@ class Ilsw():
             session = get_session()
             chat_id = update.message.chat_id
 
-            subscriber = self.get_or_create_subscriber(session, chat_id)
+            subscriber = Subscriber.get_or_create(session, chat_id)
             subscriber.active = False
             session.add(subscriber)
             session.commit()
@@ -91,7 +91,7 @@ class Ilsw():
             session = get_session()
             message = update.message.text.lower()
             chat_id = update.message.chat_id
-            subscriber = self.get_or_create_subscriber(session, chat_id)
+            subscriber = Subscriber.get_or_create(session, chat_id)
             if subscriber.active is False:
                 return
 
@@ -145,14 +145,3 @@ class Ilsw():
         except Exception as e:
             print(traceback.format_exc())
             raise
-
-    def get_or_create_subscriber(self, session, chat_id):
-        """Get or create a new subscriber."""
-        subscriber = session.query(Subscriber).get(chat_id)
-        if not subscriber:
-            subscriber = Subscriber(chat_id)
-            session.add(subscriber)
-            session.commit()
-            subscriber = session.query(Subscriber).get(chat_id)
-
-        return subscriber

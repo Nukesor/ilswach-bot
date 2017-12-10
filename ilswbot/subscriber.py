@@ -16,3 +16,14 @@ class Subscriber(base):
     def __init__(self, chat_id):
         """Create a new subscriber."""
         self.chat_id = chat_id
+
+    def get_or_create(self, session, chat_id):
+        """Get or create a new subscriber."""
+        subscriber = session.query(Subscriber).get(chat_id)
+        if not subscriber:
+            subscriber = Subscriber(chat_id)
+            session.add(subscriber)
+            session.commit()
+            subscriber = session.query(Subscriber).get(chat_id)
+
+        return subscriber
