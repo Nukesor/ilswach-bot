@@ -1,7 +1,7 @@
 """The sqlite model for a subscriber."""
 from ilswbot.db import base
 
-from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy import Column, String, Boolean
 
 
 class Subscriber(base):
@@ -17,7 +17,8 @@ class Subscriber(base):
         """Create a new subscriber."""
         self.chat_id = chat_id
 
-    def get_or_create(self, session, chat_id):
+    @staticmethod
+    def get_or_create(session, chat_id):
         """Get or create a new subscriber."""
         subscriber = session.query(Subscriber).get(chat_id)
         if not subscriber:

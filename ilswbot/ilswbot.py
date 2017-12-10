@@ -64,6 +64,7 @@ class Ilsw():
             text = "I'm spying on Lukas :3"
             bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
+            print('Error in function `stop`.')
             print(traceback.format_exc())
             raise
 
@@ -82,6 +83,7 @@ class Ilsw():
             text = "Stopped spying on Lukas :("
             bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
+            print('Error in function `start`.')
             print(traceback.format_exc())
             raise
 
@@ -113,6 +115,7 @@ class Ilsw():
                 bot.sendMessage(chat_id=chat_id, text=response)
             session.close()
         except Exception as e:
+            print('Error in function `process`.')
             print(traceback.format_exc())
             raise
 
@@ -143,5 +146,6 @@ class Ilsw():
             session.close()
 
         except Exception as e:
+            print('Error in function `answer_subscribers`.')
             print(traceback.format_exc())
             raise
