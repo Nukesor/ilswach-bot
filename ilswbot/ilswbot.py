@@ -111,6 +111,7 @@ class Ilsw():
                     session.add(subscriber)
                     session.commit()
                 bot.sendMessage(chat_id=chat_id, text=response)
+            session.close()
         except Exception as e:
             print(traceback.format_exc())
             raise
@@ -139,6 +140,7 @@ class Ilsw():
             for subscriber in self.subscribers:
                 response = "Leute, Lukas is grad aufgewacht!"
                 bot.sendMessage(chat_id=subscriber, text=response)
+            session.close()
 
         except Exception as e:
             print(traceback.format_exc())
