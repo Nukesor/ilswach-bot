@@ -3,7 +3,7 @@ import traceback
 import urllib.error
 import urllib.request
 from ilswbot.config import TELEGRAM_API_KEY, API_URL, SUBSCRIPTION_ENABLED
-from ilswbot.db import session_scope
+from ilswbot.db import get_session
 from ilswbot.subscriber import Subscriber
 
 from telegram.ext import (
@@ -52,69 +52,79 @@ class Ilsw():
     def start(self, bot, update):
         """Start the bot."""
         try:
-            with session_scope() as session:
-                chat_id = update.message.chat_id
-                subscriber = Subscriber.get_or_create(session, chat_id)
-                subscriber.active = True
+            session = get_session()
+            chat_id = update.message.chat_id
+            subscriber = Subscriber.get_or_create(session, chat_id)
+            subscriber.active = True
 
-                session.add(subscriber)
+            session.add(subscriber)
+            session.commit()
 
-                text = "I'm spying on Lukas :3"
-                bot.sendMessage(chat_id=chat_id, text=text)
+            text = "I'm spying on Lukas :3"
+            bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
             print('Error in function `stop`.')
             print(traceback.format_exc())
             pass
+        finally:
+            session.remove()
 
     def stop(self, bot, update):
         """Stop the bot."""
         try:
-            with session_scope() as session:
-                chat_id = update.message.chat_id
-                subscriber = Subscriber.get_or_create(session, chat_id)
-                subscriber.active = False
+            session = get_session()
+            chat_id = update.message.chat_id
+            subscriber = Subscriber.get_or_create(session, chat_id)
+            subscriber.active = False
+            session.add(subscriber)
+            session.commit()
 
-                session.add(subscriber)
-
-                text = "Stopped spying on Lukas :("
-                bot.sendMessage(chat_id=chat_id, text=text)
+            text = "Stopped spying on Lukas :("
+            bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
             print('Error in function `start`.')
             print(traceback.format_exc())
             pass
+        finally:
+            session.remove()
 
     def process(self, bot, update):
         """Check if anybody asked for lukas's status and anser them."""
         try:
-            with session_scope() as session:
-                message = update.message.text.lower()
-                chat_id = update.message.chat_id
-                subscriber = Subscriber.get_or_create(session, chat_id)
-                if subscriber.active is False:
+            session = get_session()
+            message = update.message.text.lower()
+            chat_id = update.message.chat_id
+            subscriber = Subscriber.get_or_create(session, chat_id)
+            if subscriber.active is False:
+                return
+
+            # Flame Lukas, if he asks for his own sleep status. Subscribing is allowed
+            if 'lukasovich' == update.message.from_user.username.lower():
+                if 'wach' in message:
+                    bot.sendMessage(
+                        chat_id=update.message.chat_id,
+                        text='Halt die Fresse Lukas >:S',
+                    )
                     return
 
-                # Flame Lukas, if he asks for his own sleep status. Subscribing is allowed
-                if 'lukasovich' == update.message.from_user.username.lower():
-                    if 'wach' in message:
-                        bot.sendMessage(
-                            chat_id=update.message.chat_id,
-                            text='Halt die Fresse Lukas >:S',
-                        )
-                        return
+            # Lukas mentioned and wach in one sentence.
+            lukas_names = ['lukas', 'lulu']
+            if len(list(filter(lambda name: name in message, lukas_names))) > 0 and 'wach' in message:
 
-                # Lukas mentioned and wach in one sentence.
-                lukas_names = ['lukas', 'lulu']
-                if len(list(filter(lambda name: name in message, lukas_names))) > 0 and 'wach' in message:
+                success, response = self.get_lukas_status()
+                if success and response == 'NEIN':
+                    subscriber.waiting = True
+                    session.add(subscriber)
+                bot.sendMessage(chat_id=chat_id, text=response)
 
-                    success, response = self.get_lukas_status()
-                    if success and response == 'NEIN':
-                        subscriber.waiting = True
-                        session.add(subscriber)
-                    bot.sendMessage(chat_id=chat_id, text=response)
+            session.commit()
+
         except Exception as e:
             print('Error in function `process`.')
             print(traceback.format_exc())
             pass
+        finally:
+            session.remove()
 
     def get_lukas_status(self):
         """Poll the ilsw api for lukas's sleep status."""
@@ -130,23 +140,27 @@ class Ilsw():
             if not SUBSCRIPTION_ENABLED:
                 return
 
-            with session_scope() as session:
-                subscriber = session.query(Subscriber) \
-                    .filter(Subscriber.waiting == True) \
-                    .all()
-                if len(self.subscribers) == 0:
-                    return
+            session = get_session()
+            subscriber = session.query(Subscriber) \
+                .filter(Subscriber.waiting == True) \
+                .all()
+            if len(self.subscribers) == 0:
+                return
 
-                success, api_response = self.get_lukas_status()
-                if success and api_response != 'JA':
-                    return
-                for subscriber in self.subscribers:
-                    response = "Leute, Lukas is grad aufgewacht!"
-                    subscriber.waiting = False
-                    session.add(subscriber)
-                    bot.sendMessage(chat_id=subscriber, text=response)
+            success, api_response = self.get_lukas_status()
+            if success and api_response != 'JA':
+                return
+            for subscriber in self.subscribers:
+                response = "Leute, Lukas is grad aufgewacht!"
+                subscriber.waiting = False
+                session.add(subscriber)
+                bot.sendMessage(chat_id=subscriber, text=response)
+
+            session.commit()
 
         except Exception as e:
             print('Error in function `answer_subscribers`.')
             print(traceback.format_exc())
             pass
+        finally:
+            session.remove()
