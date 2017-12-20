@@ -29,7 +29,7 @@ class Ilsw():
 
         # Add reoccurring jobs
         job_queue = self.updater.job_queue
-        job_queue.run_repeating(self.answer_subscribers, interval=60, first=0)
+        job_queue.run_repeating(self.answer_subscribers, interval=10, first=0)
 
         # Create handler
         message_handler = MessageHandler(Filters.text, self.process)
@@ -144,20 +144,21 @@ class Ilsw():
                 return
 
             session = get_session()
-            subscriber = session.query(Subscriber) \
+            subscribers = session.query(Subscriber) \
                 .filter(Subscriber.waiting == True) \
                 .all()
-            if len(self.subscribers) == 0:
+
+            if len(subscribers) == 0:
                 return
 
             success, api_response = self.get_lukas_status()
             if success and 'JA' not in api_response:
                 return
-            for subscriber in self.subscribers:
+            for subscriber in subscribers:
                 response = "Leute, Lukas is grad aufgewacht!"
                 subscriber.waiting = False
                 session.add(subscriber)
-                bot.sendMessage(chat_id=subscriber, text=response)
+                bot.sendMessage(chat_id=subscriber.chat_id, text=response)
 
             session.commit()
 
