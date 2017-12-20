@@ -115,6 +115,9 @@ class Ilsw():
                 if success and response == 'NEIN':
                     subscriber.waiting = True
                     session.add(subscriber)
+                else:
+                    subscriber.waiting = False
+                    session.add(subscriber)
                 bot.sendMessage(chat_id=chat_id, text=response)
 
             session.commit()
@@ -148,7 +151,7 @@ class Ilsw():
                 return
 
             success, api_response = self.get_lukas_status()
-            if success and api_response != 'JA':
+            if success and 'JA' not in api_response:
                 return
             for subscriber in self.subscribers:
                 response = "Leute, Lukas is grad aufgewacht!"
