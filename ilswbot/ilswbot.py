@@ -134,7 +134,7 @@ class Ilsw():
             subscriber = session.query(Subscriber) \
                 .filter(Subscriber.waiting == True) \
                 .all()
-            if len(self.subscribers) != 0:
+            if len(self.subscribers) == 0:
                 return
 
             success, api_response = self.get_lukas_status()
@@ -142,7 +142,10 @@ class Ilsw():
                 return
             for subscriber in self.subscribers:
                 response = "Leute, Lukas is grad aufgewacht!"
+                subscriber.waiting = False
+                session.add(subscriber)
                 bot.sendMessage(chat_id=subscriber, text=response)
+            session.commit()
             session.close()
 
         except Exception as e:
