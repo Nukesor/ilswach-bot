@@ -23,7 +23,7 @@ class Ilsw():
 
     def __init__(self):
         """Initialize telegram bot and all needed variables."""
-        self.last_status = None
+        self.sleeping = None
         self.subscribers = []
         self.updater = Updater(token=TELEGRAM_API_KEY)
 
@@ -35,6 +35,8 @@ class Ilsw():
         message_handler = MessageHandler(Filters.text, self.process)
         stop_handler = CommandHandler('stop', self.stop)
         start_handler = CommandHandler('start', self.start)
+        start_handler = CommandHandler('subscribe', self.start)
+        start_handler = CommandHandler('unsubscribe', self.start)
 
         # Add handler
         dispatcher = self.updater.dispatcher
@@ -63,7 +65,47 @@ class Ilsw():
             text = "I'm spying on Lukas :3"
             bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
-            print('Error in function `stop`.')
+            print('Error in function `start`.')
+            print(traceback.format_exc())
+            pass
+        finally:
+            session.remove()
+
+    def subscribe(self, bot, update):
+        """Start the bot."""
+        try:
+            session = get_session()
+            chat_id = update.message.chat_id
+            subscriber = Subscriber.get_or_create(session, chat_id)
+            subscriber.subscribed = True
+
+            session.add(subscriber)
+            session.commit()
+
+            text = "You're now subscribed."
+            bot.sendMessage(chat_id=chat_id, text=text)
+        except Exception as e:
+            print('Error in function `subscribe`.')
+            print(traceback.format_exc())
+            pass
+        finally:
+            session.remove()
+
+    def unsubscribe(self, bot, update):
+        """Start the bot."""
+        try:
+            session = get_session()
+            chat_id = update.message.chat_id
+            subscriber = Subscriber.get_or_create(session, chat_id)
+            subscriber.subscribed = False
+
+            session.add(subscriber)
+            session.commit()
+
+            text = "You're now unsubscribed."
+            bot.sendMessage(chat_id=chat_id, text=text)
+        except Exception as e:
+            print('Error in function `subscribe`.')
             print(traceback.format_exc())
             pass
         finally:
@@ -82,7 +124,7 @@ class Ilsw():
             text = "Stopped spying on Lukas :("
             bot.sendMessage(chat_id=chat_id, text=text)
         except Exception as e:
-            print('Error in function `start`.')
+            print('Error in function `stop`.')
             print(traceback.format_exc())
             pass
         finally:
@@ -112,11 +154,8 @@ class Ilsw():
             if len(list(filter(lambda name: name in message, lukas_names))) > 0 and 'wach' in message:
 
                 success, response = self.get_lukas_status()
-                if success and response == 'NEIN':
-                    subscriber.waiting = True
-                    session.add(subscriber)
-                else:
-                    subscriber.waiting = False
+                if success and response == 'NEIN' and not subscribe.one_time_sub:
+                    subscriber.one_time_sub = True
                     session.add(subscriber)
                 bot.sendMessage(chat_id=chat_id, text=response)
 
@@ -140,27 +179,38 @@ class Ilsw():
     def answer_subscribers(self, bot, job):
         """Check if Lukas is now awake and notify everybody who asked, while he was sleeping."""
         try:
-            if not SUBSCRIPTION_ENABLED:
-                return
-
             session = get_session()
-            subscribers = session.query(Subscriber) \
-                .filter(Subscriber.waiting == True) \
-                .all()
-
-            if len(subscribers) == 0:
-                return
-
             success, api_response = self.get_lukas_status()
-            if success and 'JA' not in api_response:
-                return
-            for subscriber in subscribers:
-                response = "Leute, Lukas is grad aufgewacht!"
-                subscriber.waiting = False
-                session.add(subscriber)
-                bot.sendMessage(chat_id=subscriber.chat_id, text=response)
 
-            session.commit()
+            if not ONE_TIME_SUB_ENABLED:
+                # Answer one time subscriptions
+                subscribers = session.query(Subscriber) \
+                    .filter(Subscriber.one_time_sub == True) \
+                    .filter(Subscriber.subscribed == False) \
+                    .all()
+                if len(subscribers) > 0:
+                    if success and 'JA' not in api_response:
+                        return
+                    for subscriber in subscribers:
+                        response = "Leute, Lukas is grad aufgewacht!"
+                        subscriber.one_time_sub = False
+                        session.add(subscriber)
+                        bot.sendMessage(chat_id=subscriber.chat_id, text=response)
+                session.commit()
+
+            # Answer permanent subscriptions
+            if not PERMANENT_SUBS_ENABLED:
+                subscribers= session.query(Subscriber) \
+                    .filter(Subscriber.subscribed == True) \
+                    .all()
+                if len(self.subscribers) > 0 and self.status_changed(start_polling):
+                    for subscriber in subscribers:
+                        if self.sleeping:
+                            response = "Leute, Lukas is eingeschlafen!"
+                        else:
+                            response = "Leute, Lukas is grad aufgewacht!"
+                        bot.sendMessage(chat_id=subscriber.chat_id, text=response)
+
 
         except Exception as e:
             print('Error in function `answer_subscribers`.')
@@ -168,3 +218,15 @@ class Ilsw():
             pass
         finally:
             session.remove()
+
+    def status_changed(self, status):
+        status = True if status == 'JA' else False
+        if self.sleeping is None:
+            self.sleeping = status
+            return False
+
+        if self.sleeping == status:
+            return False
+        else:
+            self.sleeping = status
+            return True

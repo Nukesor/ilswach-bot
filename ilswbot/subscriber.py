@@ -11,7 +11,8 @@ class Subscriber(base):
 
     chat_id = Column(String(100), primary_key=True)
     active = Column(Boolean(), nullable=False, default=False)
-    waiting = Column(Boolean(), nullable=False, default=False)
+    one_time_sub = Column(Boolean(), nullable=False, default=False)
+    subscribed = Column(Boolean(), nullable=False, default=False)
 
     def __init__(self, chat_id):
         """Create a new subscriber."""
