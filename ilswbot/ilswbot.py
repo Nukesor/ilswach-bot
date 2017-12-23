@@ -40,14 +40,16 @@ class Ilsw():
         message_handler = MessageHandler(Filters.text, self.process)
         stop_handler = CommandHandler('stop', self.stop)
         start_handler = CommandHandler('start', self.start)
-        start_handler = CommandHandler('subscribe', self.start)
-        start_handler = CommandHandler('unsubscribe', self.start)
+        subscribe_handler = CommandHandler('subscribe', self.subscribe)
+        unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
 
         # Add handler
         dispatcher = self.updater.dispatcher
         dispatcher.add_handler(message_handler)
         dispatcher.add_handler(stop_handler)
         dispatcher.add_handler(start_handler)
+        dispatcher.add_handler(subscribe_handler)
+        dispatcher.add_handler(unsubscribe_handler)
 
         # Start to poll messages
         self.updater.start_polling()
