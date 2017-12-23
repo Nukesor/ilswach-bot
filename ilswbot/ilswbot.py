@@ -44,6 +44,7 @@ class Ilsw():
         unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
         spirit_handler = CommandHandler('startTheChristmasSpirit', self.CHRISTMAS)
         goodbot_handler = CommandHandler('goodbot', self.goodbot)
+        goodbot_handler = CommandHandler('thuglife', self.thug_life)
 
         # Add handler
         dispatcher = self.updater.dispatcher
@@ -233,6 +234,10 @@ class Ilsw():
             session.remove()
 
     def CHRISTMAS(self, bot, update):
+        chat_id = update.message.chat_id
+        bot.send_photo(chat_id=chat_id, photo=open('./pics/christmas_life.jpg', 'rb'))
+
+    def thug_life(self, bot, update):
         chat_id = update.message.chat_id
         bot.send_photo(chat_id=chat_id, photo=open('./pics/thug_life.jpg', 'rb'))
 
