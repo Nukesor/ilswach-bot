@@ -62,14 +62,6 @@ class Ilsw():
         """Run the main loop of the bot."""
         self.updater.idle()
 
-    def CHRISTMAS(self, bot, update):
-        chat_id = update.message.chat_id
-        bot.send_photo(chat_id=chat_id, photo=open('./pics/thug_life.jpg', 'rb'))
-
-    def goodbot(self, bot, update):
-        chat_id = update.message.chat_id
-        bot.sendMessage(chat_id=chat_id, text=":3")
-
     def start(self, bot, update):
         """Start the bot."""
         try:
@@ -200,6 +192,8 @@ class Ilsw():
         try:
             session = get_session()
             success, api_response = self.get_lukas_status()
+            if not success:
+                return
 
             if not ONE_TIME_SUB_ENABLED:
                 # Answer one time subscriptions
@@ -208,7 +202,7 @@ class Ilsw():
                     .filter(Subscriber.subscribed == False) \
                     .all()
                 if len(subscribers) > 0:
-                    if success and 'JA' not in api_response:
+                    if 'JA' not in api_response:
                         return
                     for subscriber in subscribers:
                         response = "Leute, Lukas is grad aufgewacht!"
@@ -237,6 +231,14 @@ class Ilsw():
             pass
         finally:
             session.remove()
+
+    def CHRISTMAS(self, bot, update):
+        chat_id = update.message.chat_id
+        bot.send_photo(chat_id=chat_id, photo=open('./pics/thug_life.jpg', 'rb'))
+
+    def goodbot(self, bot, update):
+        chat_id = update.message.chat_id
+        bot.sendMessage(chat_id=chat_id, text=":3")
 
     def status_changed(self, status):
         status = True if status == 'JA' else False
