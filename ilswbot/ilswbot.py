@@ -42,6 +42,8 @@ class Ilsw():
         start_handler = CommandHandler('start', self.start)
         subscribe_handler = CommandHandler('subscribe', self.subscribe)
         unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
+        spirit_handler = CommandHandler('startTheChristmasSpirit', self.CHRISTMAS)
+        goodbot_handler = CommandHandler('goodbot', self.goodbot)
 
         # Add handler
         dispatcher = self.updater.dispatcher
@@ -50,6 +52,8 @@ class Ilsw():
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(subscribe_handler)
         dispatcher.add_handler(unsubscribe_handler)
+        dispatcher.add_handler(spirit_handler)
+        dispatcher.add_handler(goodbot_handler)
 
         # Start to poll messages
         self.updater.start_polling()
@@ -57,6 +61,14 @@ class Ilsw():
     def main(self):
         """Run the main loop of the bot."""
         self.updater.idle()
+
+    def CHRISTMAS(self, bot, update):
+        chat_id = update.message.chat_id
+        bot.send_photo(chat_id=chat_id, photo=open('./pics/thug_life.jpg', 'rb'))
+
+    def goodbot(self, bot, update):
+        chat_id = update.message.chat_id
+        bot.sendMessage(chat_id=chat_id, text=":3")
 
     def start(self, bot, update):
         """Start the bot."""
