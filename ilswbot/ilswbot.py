@@ -2,9 +2,14 @@
 import traceback
 import urllib.error
 import urllib.request
-from ilswbot.config import TELEGRAM_API_KEY, API_URL, SUBSCRIPTION_ENABLED
 from ilswbot.db import get_session
 from ilswbot.subscriber import Subscriber
+from ilswbot.config import (
+    API_URL,
+    TELEGRAM_API_KEY,
+    PERMANENT_SUBS_ENABLED,
+    ONE_TIME_SUB_ENABLED,
+)
 
 from telegram.ext import (
     CommandHandler,
