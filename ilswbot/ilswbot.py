@@ -166,7 +166,7 @@ class Ilsw():
             if len(list(filter(lambda name: name in message, lukas_names))) > 0 and 'wach' in message:
 
                 success, response = self.get_lukas_status()
-                if success and response == 'NEIN' and not subscribe.one_time_sub:
+                if success and response == 'NEIN' and not subscriber.one_time_sub:
                     subscriber.one_time_sub = True
                     session.add(subscriber)
                 bot.sendMessage(chat_id=chat_id, text=response)
@@ -214,17 +214,16 @@ class Ilsw():
 
             # Answer permanent subscriptions
             if PERMANENT_SUBS_ENABLED:
-                subscribers= session.query(Subscriber) \
+                subscribers = session.query(Subscriber) \
                     .filter(Subscriber.subscribed == True) \
                     .all()
-                if len(self.subscribers) > 0 and self.status_changed(start_polling):
+                if len(self.subscribers) > 0 and self.status_changed(api_response):
                     for subscriber in subscribers:
                         if self.sleeping:
                             response = "Leute, Lukas is eingeschlafen!"
                         else:
                             response = "Leute, Lukas is grad aufgewacht!"
                         bot.sendMessage(chat_id=subscriber.chat_id, text=response)
-
 
         except Exception as e:
             print('Error in function `answer_subscribers`.')
@@ -234,21 +233,25 @@ class Ilsw():
             session.remove()
 
     def CHRISTMAS(self, bot, update):
+        """Respond to startTheChristmasSpirit."""
         chat_id = update.message.chat_id
         bot.send_photo(chat_id=chat_id, photo=open('./pics/christmas_life.jpg', 'rb'))
 
     def thug_life(self, bot, update):
+        """Respond to thug life."""
         chat_id = update.message.chat_id
         bot.send_photo(chat_id=chat_id, photo=open('./pics/thug_life.jpg', 'rb'))
 
     def goodbot(self, bot, update):
+        """Respond to goodbot."""
         chat_id = update.message.chat_id
         bot.sendMessage(chat_id=chat_id, text=":3")
 
     def status_changed(self, status):
+        """Check if the sleeping status of lukas changed."""
         # Determine status by response.
         # If an invalid response is returned we instantly return False
-        if status == 'JA'
+        if status == 'JA':
             status = True
         elif status == 'NEIN':
             status = false
