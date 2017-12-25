@@ -196,7 +196,7 @@ class Ilsw():
             if not success:
                 return
 
-            if not ONE_TIME_SUB_ENABLED:
+            if ONE_TIME_SUB_ENABLED:
                 # Answer one time subscriptions
                 subscribers = session.query(Subscriber) \
                     .filter(Subscriber.one_time_sub == True) \
@@ -213,7 +213,7 @@ class Ilsw():
                 session.commit()
 
             # Answer permanent subscriptions
-            if not PERMANENT_SUBS_ENABLED:
+            if PERMANENT_SUBS_ENABLED:
                 subscribers= session.query(Subscriber) \
                     .filter(Subscriber.subscribed == True) \
                     .all()
@@ -246,7 +246,15 @@ class Ilsw():
         bot.sendMessage(chat_id=chat_id, text=":3")
 
     def status_changed(self, status):
-        status = True if status == 'JA' else False
+        # Determine status by response.
+        # If an invalid response is returned we instantly return False
+        if status == 'JA'
+            status = True
+        elif status == 'NEIN':
+            status = false
+        else:
+            return False
+
         if self.sleeping is None:
             self.sleeping = status
             return False
