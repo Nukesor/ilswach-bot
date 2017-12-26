@@ -42,7 +42,8 @@ class Ilsw():
         start_handler = CommandHandler('start', self.start)
         subscribe_handler = CommandHandler('subscribe', self.subscribe)
         unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
-        spirit_handler = CommandHandler('startTheChristmasSpirit', self.CHRISTMAS)
+        start_spirit_handler = CommandHandler('startTheChristmasSpirit', self.start_the_christmas_spirit)
+        stop_spirit_handler = CommandHandler('stopTheChristmasSpirit', self.stop_the_christmas_spirit)
         goodbot_handler = CommandHandler('goodbot', self.goodbot)
         goodbot_handler = CommandHandler('thuglife', self.thug_life)
 
@@ -53,7 +54,8 @@ class Ilsw():
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(subscribe_handler)
         dispatcher.add_handler(unsubscribe_handler)
-        dispatcher.add_handler(spirit_handler)
+        dispatcher.add_handler(start_spirit_handler)
+        dispatcher.add_handler(stop_spirit_handler)
         dispatcher.add_handler(goodbot_handler)
 
         # Start to poll messages
@@ -232,10 +234,15 @@ class Ilsw():
         finally:
             session.remove()
 
-    def CHRISTMAS(self, bot, update):
+    def start_the_christmas_spirit(self, bot, update):
         """Respond to startTheChristmasSpirit."""
         chat_id = update.message.chat_id
         bot.send_photo(chat_id=chat_id, photo=open('./pics/christmas_life.jpg', 'rb'))
+
+    def stop_the_christmas_spirit(self, bot, update):
+        """Respond to goodbot."""
+        chat_id = update.message.chat_id
+        bot.sendMessage(chat_id=chat_id, text=":3")
 
     def thug_life(self, bot, update):
         """Respond to thug life."""
