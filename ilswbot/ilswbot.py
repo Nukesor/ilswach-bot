@@ -40,8 +40,6 @@ class Ilsw():
         message_handler = MessageHandler(Filters.text, self.process)
         stop_handler = CommandHandler('stop', self.stop)
         start_handler = CommandHandler('start', self.start)
-        subscribe_handler = CommandHandler('subscribe', self.subscribe)
-        unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
         start_spirit_handler = CommandHandler('startTheChristmasSpirit', self.start_the_christmas_spirit)
         stop_spirit_handler = CommandHandler('stopTheChristmasSpirit', self.stop_the_christmas_spirit)
         goodbot_handler = CommandHandler('goodbot', self.goodbot)
@@ -52,11 +50,16 @@ class Ilsw():
         dispatcher.add_handler(message_handler)
         dispatcher.add_handler(stop_handler)
         dispatcher.add_handler(start_handler)
-        dispatcher.add_handler(subscribe_handler)
-        dispatcher.add_handler(unsubscribe_handler)
         dispatcher.add_handler(start_spirit_handler)
         dispatcher.add_handler(stop_spirit_handler)
         dispatcher.add_handler(goodbot_handler)
+
+        if PERMANENT_SUBS_ENABLED:
+            subscribe_handler = CommandHandler('subscribe', self.subscribe)
+            unsubscribe_handler = CommandHandler('unsubscribe', self.unsubscribe)
+            dispatcher.add_handler(subscribe_handler)
+            dispatcher.add_handler(unsubscribe_handler)
+
 
         # Start to poll messages
         self.updater.start_polling()
