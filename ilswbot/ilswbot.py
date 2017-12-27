@@ -190,7 +190,7 @@ class Ilsw():
         try:
             status = urllib.request.urlopen(API_URL).read()
             return True, status.decode('utf-8')
-        except urllib.error.HTTPError:
+        except (urllib.error.HTTPError, urllib.error.URLError):
             return False, 'Jo. Die Api ist im Sack.'
 
     def answer_subscribers(self, bot, job):
