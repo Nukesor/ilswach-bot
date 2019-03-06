@@ -40,7 +40,7 @@ class Ilsw():
         message_handler = MessageHandler(Filters.text, self.process)
         stop_handler = CommandHandler('stop', self.stop)
         start_handler = CommandHandler('start', self.start)
-        start_spirit_handler = CommandHandler('startTheChristmasSpirit', self.start_the_christmas_spirit)
+        start_spirit_handler = CommandHandler('start_the_christmas_spirit', self.start_the_christmas_spirit)
         stop_spirit_handler = CommandHandler('stopTheChristmasSpirit', self.stop_the_christmas_spirit)
         goodbot_handler = CommandHandler('goodbot', self.goodbot)
         goodbot_handler = CommandHandler('thuglife', self.thug_life)
