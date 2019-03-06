@@ -41,9 +41,8 @@ class Ilsw():
         stop_handler = CommandHandler('stop', self.stop)
         start_handler = CommandHandler('start', self.start)
         start_spirit_handler = CommandHandler('start_the_christmas_spirit', self.start_the_christmas_spirit)
-        stop_spirit_handler = CommandHandler('stopTheChristmasSpirit', self.stop_the_christmas_spirit)
         goodbot_handler = CommandHandler('goodbot', self.goodbot)
-        goodbot_handler = CommandHandler('thuglife', self.thug_life)
+        thuglife_handler = CommandHandler('thuglife', self.thug_life)
 
         # Add handler
         dispatcher = self.updater.dispatcher
@@ -51,8 +50,8 @@ class Ilsw():
         dispatcher.add_handler(stop_handler)
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(start_spirit_handler)
-        dispatcher.add_handler(stop_spirit_handler)
         dispatcher.add_handler(goodbot_handler)
+        dispatcher.add_handler(thuglife_handler)
 
         if PERMANENT_SUBS_ENABLED:
             subscribe_handler = CommandHandler('subscribe', self.subscribe)
@@ -241,11 +240,6 @@ class Ilsw():
         """Respond to startTheChristmasSpirit."""
         chat_id = update.message.chat_id
         bot.send_photo(chat_id=chat_id, photo=open('./pics/christmas_life.jpg', 'rb'))
-
-    def stop_the_christmas_spirit(self, bot, update):
-        """Respond to goodbot."""
-        chat_id = update.message.chat_id
-        bot.sendMessage(chat_id=chat_id, text=":3")
 
     def thug_life(self, bot, update):
         """Respond to thug life."""
