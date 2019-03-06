@@ -59,7 +59,6 @@ class Ilsw():
             dispatcher.add_handler(subscribe_handler)
             dispatcher.add_handler(unsubscribe_handler)
 
-
         # Start to poll messages
         self.updater.start_polling()
 
@@ -80,7 +79,7 @@ class Ilsw():
 
             text = "I'm spying on Lukas :3"
             bot.sendMessage(chat_id=chat_id, text=text)
-        except Exception as e:
+        except BaseException:
             print('Error in function `start`.')
             print(traceback.format_exc())
             pass
@@ -100,7 +99,7 @@ class Ilsw():
 
             text = "You're now subscribed."
             bot.sendMessage(chat_id=chat_id, text=text)
-        except Exception as e:
+        except BaseException:
             print('Error in function `subscribe`.')
             print(traceback.format_exc())
             pass
@@ -120,7 +119,7 @@ class Ilsw():
 
             text = "You're now unsubscribed."
             bot.sendMessage(chat_id=chat_id, text=text)
-        except Exception as e:
+        except BaseException:
             print('Error in function `subscribe`.')
             print(traceback.format_exc())
             pass
@@ -139,7 +138,7 @@ class Ilsw():
 
             text = "Stopped spying on Lukas :("
             bot.sendMessage(chat_id=chat_id, text=text)
-        except Exception as e:
+        except BaseException:
             print('Error in function `stop`.')
             print(traceback.format_exc())
             pass
@@ -177,7 +176,7 @@ class Ilsw():
 
             session.commit()
 
-        except Exception as e:
+        except BaseException:
             print('Error in function `process`.')
             print(traceback.format_exc())
             pass
@@ -203,8 +202,8 @@ class Ilsw():
             if ONE_TIME_SUB_ENABLED:
                 # Answer one time subscriptions
                 subscribers = session.query(Subscriber) \
-                    .filter(Subscriber.one_time_sub == True) \
-                    .filter(Subscriber.subscribed == False) \
+                    .filter(Subscriber.one_time_sub.is_(True)) \
+                    .filter(Subscriber.subscribed.is_(False)) \
                     .all()
                 if len(subscribers) > 0:
                     if 'JA' not in api_response:
@@ -219,7 +218,7 @@ class Ilsw():
             # Answer permanent subscriptions
             if PERMANENT_SUBS_ENABLED:
                 subscribers = session.query(Subscriber) \
-                    .filter(Subscriber.subscribed == True) \
+                    .filter(Subscriber.subscribed.is_(True)) \
                     .all()
                 if len(self.subscribers) > 0 and self.status_changed(api_response):
                     for subscriber in subscribers:
@@ -229,7 +228,7 @@ class Ilsw():
                             response = "Leute, Lukas is grad aufgewacht!"
                         bot.sendMessage(chat_id=subscriber.chat_id, text=response)
 
-        except Exception as e:
+        except BaseException:
             print('Error in function `answer_subscribers`.')
             print(traceback.format_exc())
             pass
@@ -258,7 +257,7 @@ class Ilsw():
         if status == 'JA':
             status = True
         elif status == 'NEIN':
-            status = false
+            status = False
         else:
             return False
 
