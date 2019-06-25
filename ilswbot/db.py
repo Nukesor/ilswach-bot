@@ -4,9 +4,9 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from ilswbot.config import SQL_URI
+from ilswbot.config import config
 
-engine = create_engine(SQL_URI)
+engine = create_engine(config['database']['sql_uri'])
 base = declarative_base(bind=engine)
 
 

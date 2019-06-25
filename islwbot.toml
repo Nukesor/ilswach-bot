@@ -1,0 +1,17 @@
+[telegram]
+api_key = "your_telegram_api_key"
+
+[database]
+sql_uri = "sqlite:///ilswbot.db"
+
+[settings]
+api_url = "http://ilswlol.customalized.org/?raw=on"
+one_time_subs = true
+permanent_subs = false
+
+[webhook]
+enabled = false
+domain = "https://localhost"
+token = "stickerfinder"
+cert_path = "/path/to/cert.pem"
+port = 7000
