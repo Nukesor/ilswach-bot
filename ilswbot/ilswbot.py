@@ -86,7 +86,7 @@ def process(bot, update, session):
         return
 
     # Flame Lukas, if he asks for his own sleep status. Subscribing is allowed
-    from_user = update.message.from_user.username.lower()
+    from_user = update.message.from_user.username
     if from_user.username is not None and 'lukasovich' == from_user.username.lower():
         if 'wach' in message:
             bot.sendMessage(
