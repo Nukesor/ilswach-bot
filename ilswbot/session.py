@@ -32,6 +32,8 @@ def session_wrapper(send_message=True):
         @wraps(func)
         def wrapper(update, context):
             session = get_session()
+            if update.message is None:
+                return
             try:
                 func(context.bot, update, session)
                 session.commit()
